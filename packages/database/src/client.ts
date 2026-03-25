@@ -1,5 +1,10 @@
+import { resolve } from "node:path";
+import { config as loadEnv } from "dotenv";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../generated/client/client.js";
+
+loadEnv({ path: resolve(process.cwd(), ".env") });
+loadEnv({ path: resolve(process.cwd(), "../../.env") });
 
 const connectionString = process.env.DATABASE_URL;
 
