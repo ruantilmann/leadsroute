@@ -42,3 +42,4 @@ yarn-error.log*
 
 # build outputs
 dist/
+packages/database/generated/

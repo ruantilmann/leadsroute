@@ -9,7 +9,12 @@
     "dev:api": "turbo run dev --filter=@leadsroute/api",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "db:generate": "pnpm --filter @leadsroute/database db:generate",
+    "db:migrate": "pnpm --filter @leadsroute/database db:migrate",
+    "db:studio": "pnpm --filter @leadsroute/database db:studio"
   },
   "devDependencies": {
     "turbo": "^2.5.8"
