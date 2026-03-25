@@ -17,6 +17,12 @@ importers:
       '@fastify/cors':
         specifier: ^11.1.0
         version: 11.2.0
+      '@leadsroute/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@orpc/server':
+        specifier: ^1.13.11
+        version: 1.13.11(fastify@5.8.4)
       fastify:
         specifier: ^5.6.1
         version: 5.8.4
@@ -722,6 +728,20 @@ packages:
   '@orpc/contract@1.13.11':
     resolution: {integrity: sha512-Y8vVId49wVfQfnuhhsJM2haBJSxvs7OczXjb7YO4PhEwWahBnaqb+FG+zFJpfRWJl+cSJx+g8tkix7Z+Yq4UHw==}
 
+  '@orpc/interop@1.13.11':
+    resolution: {integrity: sha512-zBTqkKErpa5gdy+CZgUhnzYyDwBYxdARkcIILfbGr1yAKnbvRw53OPpJ2muPHSyJkEFD2xU8Y2f2719YmOYKBA==}
+
+  '@orpc/server@1.13.11':
+    resolution: {integrity: sha512-BlVUwB5ArzaS2v/8V7tQ4w0Q2+rrjO8TntaLOoGxWnQOkH4gLznBEO5n8FgX3bKKlkwzTr5sbmuWwCCiV7yMGA==}
+    peerDependencies:
+      crossws: '>=0.3.4'
+      ws: '>=8.18.1'
+    peerDependenciesMeta:
+      crossws:
+        optional: true
+      ws:
+        optional: true
+
   '@orpc/shared@1.13.11':
     resolution: {integrity: sha512-ia9y7gKdBaoV4pzSnvIuvedKYd3v9AJQ5FGzQl0Gcu6o9uXNZYB6j+oB/L91ULAmabDloWupd1tikSrw71DJmQ==}
     peerDependencies:
@@ -730,8 +750,22 @@ packages:
       '@opentelemetry/api':
         optional: true
 
+  '@orpc/standard-server-aws-lambda@1.13.11':
+    resolution: {integrity: sha512-n3CR+yW6ZnW1nNBBWYVL8VFH4YzTySWkKRjkMfDxjkkbI0ocC8o/c4fNd2gDzzti5evOzPsuqF92fZHQs03EQw==}
+
+  '@orpc/standard-server-fastify@1.13.11':
+    resolution: {integrity: sha512-4gJITrIUb89btyv9yzfhVYRbkDatyHjiyeVBvHipp3SWIDPBE2GHrNFIDJp/7Vykxivbw56GeGhQrd/02Q9hwQ==}
+    peerDependencies:
+      fastify: '>=5.6.1'
+    peerDependenciesMeta:
+      fastify:
+        optional: true
+
   '@orpc/standard-server-fetch@1.13.11':
     resolution: {integrity: sha512-A7L2ZlnYGeIV2FmC/do9DQT4As68FlbFWzUnPco7kmJt+GK37yY1MsuZYIhi2/Mi4LPqSYMR9IGuJsI/0K1e9A==}
+
+  '@orpc/standard-server-node@1.13.11':
+    resolution: {integrity: sha512-exU8WomH1wEEQw+vxzK+u1S3haVMZXz0flMxVkQETiSIzoAwnS2Z4HYLnF9BQQvck0t59tp6JpCovPuP3LqDTA==}
 
   '@orpc/standard-server-peer@1.13.11':
     resolution: {integrity: sha512-xIjB8reoKH1VYyR5KNyEKAfr+BntciuJxrewjVHNkdktDoRSo9sLpuGRdcT0Zl8biJUi8iys0xniY/Z25eZxSg==}
@@ -3337,15 +3371,61 @@ snapshots:
     transitivePeerDependencies:
       - '@opentelemetry/api'
 
+  '@orpc/interop@1.13.11': {}
+
+  '@orpc/server@1.13.11(fastify@5.8.4)':
+    dependencies:
+      '@orpc/client': 1.13.11
+      '@orpc/contract': 1.13.11
+      '@orpc/interop': 1.13.11
+      '@orpc/shared': 1.13.11
+      '@orpc/standard-server': 1.13.11
+      '@orpc/standard-server-aws-lambda': 1.13.11
+      '@orpc/standard-server-fastify': 1.13.11(fastify@5.8.4)
+      '@orpc/standard-server-fetch': 1.13.11
+      '@orpc/standard-server-node': 1.13.11
+      '@orpc/standard-server-peer': 1.13.11
+      cookie: 1.1.1
+    transitivePeerDependencies:
+      - '@opentelemetry/api'
+      - fastify
+
   '@orpc/shared@1.13.11':
     dependencies:
       radash: 12.1.1
       type-fest: 5.5.0
 
+  '@orpc/standard-server-aws-lambda@1.13.11':
+    dependencies:
+      '@orpc/shared': 1.13.11
+      '@orpc/standard-server': 1.13.11
+      '@orpc/standard-server-fetch': 1.13.11
+      '@orpc/standard-server-node': 1.13.11
+    transitivePeerDependencies:
+      - '@opentelemetry/api'
+
+  '@orpc/standard-server-fastify@1.13.11(fastify@5.8.4)':
+    dependencies:
+      '@orpc/shared': 1.13.11
+      '@orpc/standard-server': 1.13.11
+      '@orpc/standard-server-node': 1.13.11
+    optionalDependencies:
+      fastify: 5.8.4
+    transitivePeerDependencies:
+      - '@opentelemetry/api'
+
   '@orpc/standard-server-fetch@1.13.11':
     dependencies:
       '@orpc/shared': 1.13.11
       '@orpc/standard-server': 1.13.11
+    transitivePeerDependencies:
+      - '@opentelemetry/api'
+
+  '@orpc/standard-server-node@1.13.11':
+    dependencies:
+      '@orpc/shared': 1.13.11
+      '@orpc/standard-server': 1.13.11
+      '@orpc/standard-server-fetch': 1.13.11
     transitivePeerDependencies:
       - '@opentelemetry/api'
 
