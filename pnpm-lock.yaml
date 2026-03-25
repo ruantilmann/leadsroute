@@ -45,6 +45,15 @@ importers:
 
   apps/web:
     dependencies:
+      '@leadsroute/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@orpc/client':
+        specifier: ^1.13.11
+        version: 1.13.11
+      '@orpc/contract':
+        specifier: ^1.13.11
+        version: 1.13.11
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1

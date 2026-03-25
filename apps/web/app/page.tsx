@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333";
+import { orpc } from "@/lib/orpc-client";
 
 export default function Home() {
   const [message, setMessage] = useState<string>("");
@@ -15,13 +14,7 @@ export default function Home() {
     setError("");
 
     try {
-      const response = await fetch(`${API_URL}/hello`);
-
-      if (!response.ok) {
-        throw new Error("Falha ao consultar a API");
-      }
-
-      const data = (await response.json()) as { message: string };
+      const data = await orpc.system.hello(undefined);
       setMessage(data.message);
     } catch {
       setError("Nao foi possivel carregar a mensagem do backend.");
