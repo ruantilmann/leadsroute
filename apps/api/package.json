@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@leadsroute/contracts": "workspace:*",
+    "@leadsroute/database": "workspace:*",
     "@fastify/cors": "^11.1.0",
     "@orpc/server": "^1.13.11",
+    "dotenv": "^17.2.3",
     "fastify": "^5.6.1"
   },
   "devDependencies": {
