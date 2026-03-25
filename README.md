@@ -1,22 +1,58 @@
 # LeadsRoute Monorepo
 
-Monorepo com frontend em Next.js e backend em Fastify.
+Monorepo com frontend em Next.js, backend em Fastify, contratos com oRPC + Zod e persistencia com Prisma + PostgreSQL.
 
 ## Estrutura
 
 - `apps/web`: frontend Next.js + shadcn/ui.
-- `apps/api`: backend Fastify com rota inicial `/hello`.
-- `packages/*`: reservado para pacotes compartilhados.
+- `apps/api`: backend Fastify + oRPC.
+- `packages/contracts`: contratos compartilhados (oRPC + Zod).
+- `packages/database`: Prisma ORM e acesso ao Postgres.
 
 ## Requisitos
 
 - Node.js 22+
 - pnpm 10+
+- Docker Desktop em execucao
 
 ## Instalação
 
 ```bash
 pnpm install
+```
+
+## Configuracao de ambiente
+
+Este projeto usa um unico arquivo de ambiente na raiz.
+
+```bash
+cp .env.example .env
+```
+
+Variaveis principais:
+
+- `DATABASE_URL`: conexao do Prisma com o Postgres.
+- `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`: credenciais do container.
+- `NEXT_PUBLIC_API_URL`: URL publica da API para o frontend.
+
+## Banco de dados (Docker + Prisma)
+
+```bash
+pnpm db:up
+pnpm db:migrate -- --name init
+pnpm db:generate
+```
+
+Se quiser abrir o Prisma Studio:
+
+```bash
+pnpm db:studio
+```
+
+Para derrubar o banco local:
+
+```bash
+pnpm db:down
 ```
 
 ## Executar em desenvolvimento
@@ -28,18 +64,20 @@ pnpm dev
 Apps em execução:
 
 - Web: `http://localhost:3000`
-- API: `http://localhost:3333/hello`
+- API HTTP: `http://localhost:3333/hello`
+- API RPC: `http://localhost:3333/rpc`
 
 ## Scripts úteis
 
 ```bash
 pnpm dev:web
 pnpm dev:api
+pnpm db:up
+pnpm db:down
+pnpm db:migrate -- --name init
+pnpm db:generate
+pnpm db:studio
 pnpm lint
 pnpm typecheck
 pnpm build
 ```
-
-## Variáveis de ambiente (web)
-
-Copie `apps/web/.env.example` para `apps/web/.env.local` se quiser alterar a URL da API.
