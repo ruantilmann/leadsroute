@@ -9,6 +9,10 @@ Monorepo com frontend em Next.js, backend em Fastify, contratos com oRPC + Zod e
 - `packages/contracts`: contratos compartilhados (oRPC + Zod).
 - `packages/database`: Prisma ORM e acesso ao Postgres.
 
+## Fluxo de desenvolvimento
+
+- Consulte `docs/fluxo-desenvolvimento.md` para regras de branches, PRs e releases.
+
 ## Requisitos
 
 - Node.js 22+
