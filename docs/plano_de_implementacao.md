@@ -18,7 +18,7 @@ Este plano descreve as implementacoes pendentes para a v1 do LeadsRoute.
 - [x] Adicionar resiliencia da importacao (rate limit, timeout, retry).
 - [x] Construir UI de importacao e listagem no frontend.
 - [x] Atualizar documentacao de setup e uso.
-- [ ] Validar fluxo completo com `lint`, `typecheck` e `build`.
+- [x] Validar fluxo completo com `lint`, `typecheck` e `build`.
 
 ## Checklist de commits planejados
 
