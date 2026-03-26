@@ -12,7 +12,7 @@ Este plano descreve as implementacoes pendentes para a v1 do LeadsRoute.
 ## To Do geral
 
 - [x] Modelar `Lead` no Prisma para o escopo simplificado.
-- [ ] Criar contratos oRPC/Zod para importacao e listagem de leads.
+- [x] Criar contratos oRPC/Zod para importacao e listagem de leads.
 - [ ] Integrar Google Places (New) no backend com Field Mask.
 - [ ] Persistir com `upsert` por `placeId`.
 - [ ] Adicionar resiliencia da importacao (rate limit, timeout, retry).
@@ -23,7 +23,7 @@ Este plano descreve as implementacoes pendentes para a v1 do LeadsRoute.
 ## Checklist de commits planejados
 
 - [x] C1 `feat(database): ajusta modelo Lead para v1 de captura simples`
-- [ ] C2 `feat(contracts): adiciona contratos lead.importBySearch, lead.list e lead.getById`
+- [x] C2 `feat(contracts): adiciona contratos lead.importBySearch, lead.list e lead.getById`
 - [ ] C3 `feat(api): implementa serviço Google Places com mapeamento de endereço`
 - [ ] C4 `feat(api): implementa importação com upsert por placeId`
 - [ ] C5 `feat(api): adiciona rate limit, timeout e retry na importação`
