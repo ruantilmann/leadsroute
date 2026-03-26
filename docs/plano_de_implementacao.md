@@ -16,7 +16,7 @@ Este plano descreve as implementacoes pendentes para a v1 do LeadsRoute.
 - [x] Integrar Google Places (New) no backend com Field Mask.
 - [x] Persistir com `upsert` por `placeId`.
 - [x] Adicionar resiliencia da importacao (rate limit, timeout, retry).
-- [ ] Construir UI de importacao e listagem no frontend.
+- [x] Construir UI de importacao e listagem no frontend.
 - [ ] Atualizar documentacao de setup e uso.
 - [ ] Validar fluxo completo com `lint`, `typecheck` e `build`.
 
@@ -28,7 +28,7 @@ Este plano descreve as implementacoes pendentes para a v1 do LeadsRoute.
 - [x] C4 `feat(api): implementa importação com upsert por placeId`
 - [x] C5 `feat(api): adiciona rate limit, timeout e retry na importação`
 - [x] C6 `feat(web): cria formulário de busca e integração com importBySearch`
-- [ ] C7 `feat(web): cria listagem de leads com filtro hasPhone`
+- [x] C7 `feat(web): cria listagem de leads com filtro hasPhone`
 - [ ] C8 `docs(readme): documenta variáveis Google e fluxo de uso`
 
 ## Detalhamento tecnico por etapa
@@ -110,5 +110,5 @@ Este plano descreve as implementacoes pendentes para a v1 do LeadsRoute.
 - [ ] Importacao por `termo + cidade` funcional.
 - [ ] Duplicidade evitada por `placeId`.
 - [ ] Leads sem telefone persistidos corretamente.
-- [ ] Tela web com importacao e listagem operacionais.
+- [x] Tela web com importacao e listagem operacionais.
 - [ ] Documentacao atualizada com onboarding e testes.
