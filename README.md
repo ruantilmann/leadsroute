@@ -38,6 +38,12 @@ Variáveis principais:
 - `DATABASE_URL`: conexão do Prisma com o Postgres.
 - `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`: credenciais do container.
 - `NEXT_PUBLIC_API_URL`: URL pública da API para o frontend.
+- `GOOGLE_MAPS_API_KEY`: chave da Places API (obrigatória para importação de leads).
+- `GOOGLE_PLACES_BASE_URL`: endpoint base da Places API (new).
+- `GOOGLE_PLACES_TIMEOUT_MS`: timeout por chamada externa.
+- `GOOGLE_PLACES_MAX_RETRIES`: tentativas extras para erros transitórios.
+- `GOOGLE_PLACES_LANGUAGE` e `GOOGLE_PLACES_REGION`: idioma/região da busca.
+- `API_*RATE_LIMIT*` e `API_HANDLER_TIMEOUT_MS`: proteção e timeout do backend.
 
 ## Banco de dados (Docker + Prisma)
 
@@ -70,6 +76,51 @@ Apps em execução:
 - Web: `http://localhost:3000`
 - API HTTP: `http://localhost:3333/hello`
 - API RPC: `http://localhost:3333/rpc`
+
+## Fluxo da v1 (importação de leads)
+
+1. Abra a Web em `http://localhost:3000`.
+2. Informe `termo` e `cidade` (e opcionalmente `limite`).
+3. Clique em **Importar leads**.
+4. Confira o resumo da importação:
+   - importados com telefone
+   - importados sem telefone
+   - atualizados
+   - ignorados
+5. Veja a tabela de leads e use o filtro de telefone.
+
+## Como testar
+
+### 1) Preparar ambiente
+
+```bash
+pnpm install
+cp .env.example .env
+```
+
+Preencha `GOOGLE_MAPS_API_KEY` no `.env`.
+
+### 2) Subir banco e aplicar schema
+
+```bash
+pnpm db:up
+pnpm db:migrate -- --name init
+pnpm db:generate
+```
+
+### 3) Subir aplicação
+
+```bash
+pnpm dev
+```
+
+### 4) Validações de qualidade
+
+```bash
+pnpm lint
+pnpm typecheck
+pnpm build
+```
 
 ## Scripts úteis
 
