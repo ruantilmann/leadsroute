@@ -27,7 +27,7 @@ Este plano descreve as implementacoes pendentes para a v1 do LeadsRoute.
 - [x] C3 `feat(api): implementa serviço Google Places com mapeamento de endereço`
 - [x] C4 `feat(api): implementa importação com upsert por placeId`
 - [x] C5 `feat(api): adiciona rate limit, timeout e retry na importação`
-- [ ] C6 `feat(web): cria formulário de busca e integração com importBySearch`
+- [x] C6 `feat(web): cria formulário de busca e integração com importBySearch`
 - [ ] C7 `feat(web): cria listagem de leads com filtro hasPhone`
 - [ ] C8 `docs(readme): documenta variáveis Google e fluxo de uso`
 
