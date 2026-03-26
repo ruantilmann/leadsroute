@@ -1,6 +1,7 @@
 import { oc } from "@orpc/contract";
 import { z } from "zod";
 import { leadContract } from "./lead.js";
+import { authContract } from "./auth.js";
 
 export const helloContract = oc
   .input(z.object({}).optional())
@@ -14,5 +15,6 @@ export const contract = {
   system: {
     hello: helloContract,
   },
+  auth: authContract,
   lead: leadContract,
 };
