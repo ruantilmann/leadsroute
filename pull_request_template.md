@@ -1,6 +1,6 @@
 ## Objetivo
 
-- Descreva de forma breve o problema e a solucao proposta.
+- Descreva de forma breve o problema e a solução proposta.
 
 ## O que foi alterado
 
@@ -18,15 +18,15 @@
 - [ ] `pnpm lint` executado
 - [ ] `pnpm typecheck` executado
 - [ ] `pnpm build` executado
-- [ ] Documentacao atualizada (`README.md`/`docs/*`) quando aplicavel
-- [ ] Sem impacto de documentacao (justificado abaixo), quando aplicavel
+- [ ] Documentação atualizada (`README.md`/`docs/*`) quando aplicável
+- [ ] Sem impacto de documentação (justificado abaixo), quando aplicável
 
-## Impacto de documentacao
+## Impacto de documentação
 
-- Arquivos de documentacao atualizados:
+- Arquivos de documentação atualizados:
   -
 
 ou
 
-- Justificativa para sem impacto de documentacao:
+- Justificativa para sem impacto de documentação:
   -

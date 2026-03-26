@@ -4,20 +4,20 @@ Este documento define o fluxo oficial de desenvolvimento do projeto LeadsRoute.
 
 ## Objetivo
 
-- Manter `main` estavel e pronta para producao.
-- Integrar mudancas gradualmente em `desenvolvimento`.
-- Isolar implementacoes por funcionalidade em branches curtas.
+- Manter `main` estável e pronta para produção.
+- Integrar mudanças gradualmente em `desenvolvimento`.
+- Isolar implementações por funcionalidade em branches curtas.
 
-## Estrategia de branches
+## Estratégia de branches
 
-- `main`: branch estavel de producao.
-- `desenvolvimento`: branch de integracao e homologacao.
+- `main`: branch estável de produção.
+- `desenvolvimento`: branch de integração e homologação.
 - `feature/*`: branch para nova funcionalidade.
-- `hotfix/*`: branch para correcao urgente em producao.
+- `hotfix/*`: branch para correção urgente em produção.
 
 ## Fluxo de feature
 
-1. Atualizar base local de integracao:
+1. Atualizar base local de integração:
 
 ```bash
 git checkout desenvolvimento
@@ -40,7 +40,7 @@ git push -u origin feature/nome-curto-da-feature
 
 5. Abrir PR de `feature/*` para `desenvolvimento`.
 
-6. Apos merge, limpar branch local e remota:
+6. Após merge, limpar branch local e remota:
 
 ```bash
 git checkout desenvolvimento
@@ -51,14 +51,14 @@ git push origin --delete feature/nome-curto-da-feature
 
 ## Fluxo de release
 
-1. Garantir `desenvolvimento` estavel (lint, typecheck e build).
+1. Garantir `desenvolvimento` estável (lint, typecheck e build).
 2. Abrir PR de `desenvolvimento` para `main`.
-3. Fazer merge apenas apos validacoes e revisoes.
-4. Opcional: criar tag de versao em `main`.
+3. Fazer merge apenas após validações e revisões.
+4. Opcional: criar tag de versão em `main`.
 
 ## Fluxo de hotfix
 
-1. Criar branch de correcao a partir de `main`:
+1. Criar branch de correção a partir de `main`:
 
 ```bash
 git checkout main
@@ -68,34 +68,34 @@ git checkout -b hotfix/corrige-x
 
 2. Corrigir, commitar e abrir PR para `main`.
 
-3. Apos merge em `main`, aplicar a mesma correcao em `desenvolvimento`:
+3. Após merge em `main`, aplicar a mesma correção em `desenvolvimento`:
 
 - via PR de `hotfix/*` para `desenvolvimento`, ou
 - via merge de `main` em `desenvolvimento`.
 
-## Convencao de commits
+## Convenção de commits
 
 Mensagens devem ser em pt-BR, objetivas e no formato:
 
 ```text
-tipo(escopo): descricao
+tipo(escopo): descrição
 ```
 
 Tipos recomendados:
 
 - `feat`: nova funcionalidade.
-- `fix`: correcao de bug.
-- `chore`: manutencao, tooling, infra.
-- `docs`: documentacao.
+- `fix`: correção de bug.
+- `chore`: manutenção, tooling, infra.
+- `docs`: documentação.
 
 Exemplos:
 
 - `feat(api): adiciona endpoint de busca de leads`
-- `fix(web): corrige exibicao da tabela de resultados`
-- `chore(infra): ajusta configuracao do docker compose`
-- `docs(readme): atualiza instrucoes de setup`
+- `fix(web): corrige exibição da tabela de resultados`
+- `chore(infra): ajusta configuração do docker compose`
+- `docs(readme): atualiza instruções de setup`
 
-## Checklist obrigatorio antes de PR
+## Checklist obrigatório antes de PR
 
 Executar na raiz do monorepo:
 
@@ -105,7 +105,7 @@ pnpm typecheck
 pnpm build
 ```
 
-Tambem e obrigatorio:
+Também é obrigatório:
 
 - validar manualmente o fluxo alterado;
 - descrever no PR o que foi alterado e como testar;
@@ -113,12 +113,12 @@ Tambem e obrigatorio:
 
 ## Regras de merge
 
-- Nao fazer push direto em `main`.
+- Não fazer push direto em `main`.
 - Evitar commit direto em `desenvolvimento` para features (usar `feature/*`).
-- Toda mudanca relevante deve passar por PR.
+- Toda mudança relevante deve passar por PR.
 
-## Observacoes para automacao e agentes
+## Observações para automação e agentes
 
-- Agentes devem seguir este fluxo ao propor mudancas.
-- Quando aplicavel, agentes devem sugerir branch de feature e PR para `desenvolvimento`.
-- Alteracoes para producao devem entrar em `main` apenas via PR.
+- Agentes devem seguir este fluxo ao propor mudanças.
+- Quando aplicável, agentes devem sugerir branch de feature e PR para `desenvolvimento`.
+- Alterações para produção devem entrar em `main` apenas via PR.

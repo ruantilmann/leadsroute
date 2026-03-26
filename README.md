@@ -1,31 +1,53 @@
-# LeadsRoute Monorepo
+# LeadsRoute
 
-Monorepo com frontend em Next.js, backend em Fastify, contratos com oRPC + Zod e persistencia com Prisma + PostgreSQL.
+O **LeadsRoute** e um projeto para **geracao de leads e organizacao de rotas** com base na **Google Places API**.
 
-## Estrutura
+> Status: projeto em desenvolvimento ativo.  
+> Novas funcionalidades e melhorias serao adicionadas em versoes futuras.
 
-- `apps/web`: frontend Next.js + shadcn/ui.
-- `apps/api`: backend Fastify + oRPC.
-- `packages/contracts`: contratos compartilhados (oRPC + Zod).
-- `packages/database`: Prisma ORM e acesso ao Postgres.
+## Visao geral
 
-## Fluxo de desenvolvimento
+A proposta do projeto e centralizar a coleta de informacoes de empresas e disponibilizar esses dados em uma aplicacao web, com uma arquitetura moderna e escalavel em monorepo.
 
-- Consulte `docs/fluxo-desenvolvimento.md` para regras de branches, PRs e releases.
+## Tecnologias utilizadas
 
-## Requisitos
+- **Monorepo**: pnpm workspaces + Turborepo
+- **Frontend**: Next.js, React, React DOM, shadcn/ui
+- **Backend**: Fastify
+- **Contratos e validacao**: oRPC + Zod
+- **Banco de dados**: PostgreSQL (Docker) + Prisma ORM
+- **Ambiente**: Node.js + pnpm
+
+## Estrutura do repositorio
+
+- `apps/web`: aplicacao frontend
+- `apps/api`: aplicacao backend
+- `packages/contracts`: contratos compartilhados (oRPC + Zod)
+- `packages/database`: camada de banco de dados (Prisma)
+- `docs/`: documentacao de fluxo e planejamento
+
+## Onboarding (setup do projeto)
+
+### 1) Pre-requisitos
 
 - Node.js 22+
 - pnpm 10+
 - Docker Desktop em execucao
 
-## Instalação
+### 2) Clonar o repositorio
+
+```bash
+git clone <URL_DO_REPOSITORIO>
+cd leadsroute
+```
+
+### 3) Instalar dependencias
 
 ```bash
 pnpm install
 ```
 
-## Configuracao de ambiente
+### 4) Configurar variaveis de ambiente
 
 Este projeto usa um unico arquivo de ambiente na raiz.
 
@@ -33,13 +55,18 @@ Este projeto usa um unico arquivo de ambiente na raiz.
 cp .env.example .env
 ```
 
-Variaveis principais:
+Preencha os valores necessarios no `.env`, principalmente:
 
-- `DATABASE_URL`: conexao do Prisma com o Postgres.
-- `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`: credenciais do container.
-- `NEXT_PUBLIC_API_URL`: URL publica da API para o frontend.
+- `DATABASE_URL`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+- `POSTGRES_DB`
+- `NEXT_PUBLIC_API_URL`
+- `GOOGLE_MAPS_API_KEY`
 
-## Banco de dados (Docker + Prisma)
+Variaveis opcionais de ajuste (timeout/retry/rate limit) tambem estao descritas no `.env.example`.
+
+### 5) Subir banco e preparar Prisma
 
 ```bash
 pnpm db:up
@@ -47,33 +74,22 @@ pnpm db:migrate -- --name init
 pnpm db:generate
 ```
 
-Se quiser abrir o Prisma Studio:
-
-```bash
-pnpm db:studio
-```
-
-Para derrubar o banco local:
-
-```bash
-pnpm db:down
-```
-
-## Executar em desenvolvimento
+### 6) Executar aplicacao em desenvolvimento
 
 ```bash
 pnpm dev
 ```
 
-Apps em execução:
+Endpoints padrao:
 
 - Web: `http://localhost:3000`
-- API HTTP: `http://localhost:3333/hello`
-- API RPC: `http://localhost:3333/rpc`
+- API: `http://localhost:3333`
+- RPC: `http://localhost:3333/rpc`
 
-## Scripts úteis
+## Scripts uteis
 
 ```bash
+pnpm dev
 pnpm dev:web
 pnpm dev:api
 pnpm db:up
@@ -85,3 +101,10 @@ pnpm lint
 pnpm typecheck
 pnpm build
 ```
+
+## Fluxo de desenvolvimento
+
+Siga as regras descritas em:
+
+- `docs/fluxo-desenvolvimento.md`
+- `AGENTS.md`

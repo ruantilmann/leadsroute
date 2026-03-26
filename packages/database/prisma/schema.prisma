@@ -12,3 +12,20 @@ model AppHealth {
   message   String   @db.VarChar(255)
   createdAt DateTime @default(now())
 }
+
+model Lead {
+  id               String   @id @default(cuid())
+  placeId          String   @unique @db.VarChar(128)
+  nomeEmpresa      String   @db.VarChar(255)
+  telefone         String?  @db.VarChar(64)
+  enderecoCompleto String   @db.VarChar(512)
+  numero           String?  @db.VarChar(32)
+  rua              String?  @db.VarChar(255)
+  bairro           String?  @db.VarChar(255)
+  cidade           String   @db.VarChar(120)
+  estado           String?  @db.VarChar(80)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([cidade])
+}
