@@ -1,6 +1,6 @@
 # LeadsRoute Monorepo
 
-Monorepo com frontend em Next.js, backend em Fastify, contratos com oRPC + Zod e persistencia com Prisma + PostgreSQL.
+Monorepo com frontend em Next.js, backend em Fastify, contratos com oRPC + Zod e persistência com Prisma + PostgreSQL.
 
 ## Estrutura
 
@@ -17,7 +17,7 @@ Monorepo com frontend em Next.js, backend em Fastify, contratos com oRPC + Zod e
 
 - Node.js 22+
 - pnpm 10+
-- Docker Desktop em execucao
+- Docker Desktop em execução
 
 ## Instalação
 
@@ -25,19 +25,19 @@ Monorepo com frontend em Next.js, backend em Fastify, contratos com oRPC + Zod e
 pnpm install
 ```
 
-## Configuracao de ambiente
+## Configuração de ambiente
 
-Este projeto usa um unico arquivo de ambiente na raiz.
+Este projeto usa um único arquivo de ambiente na raiz.
 
 ```bash
 cp .env.example .env
 ```
 
-Variaveis principais:
+Variáveis principais:
 
-- `DATABASE_URL`: conexao do Prisma com o Postgres.
+- `DATABASE_URL`: conexão do Prisma com o Postgres.
 - `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`: credenciais do container.
-- `NEXT_PUBLIC_API_URL`: URL publica da API para o frontend.
+- `NEXT_PUBLIC_API_URL`: URL pública da API para o frontend.
 
 ## Banco de dados (Docker + Prisma)
 

@@ -8,29 +8,29 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 - Siga obrigatoriamente o fluxo definido em `docs/fluxo-desenvolvimento.md`.
 - Para novas funcionalidades, trabalhe em `feature/*` com PR para `desenvolvimento`.
-- Nao proponha merge direto para `main` sem passar pelo fluxo de release.
-- Mantenha mensagens de commit em portugues do Brasil (pt-BR).
+- Não proponha merge direto para `main` sem passar pelo fluxo de release.
+- Mantenha mensagens de commit em português do Brasil (pt-BR).
 
-## Regras de documentacao (obrigatorias)
+## Regras de documentação (obrigatórias)
 
-- Toda alteracao de codigo deve avaliar impacto em documentacao.
-- Apos qualquer adicao, remocao ou mudanca de comportamento, atualize a documentacao correspondente no mesmo ciclo de trabalho.
+- Toda alteração de código deve avaliar impacto em documentação.
+- Após qualquer adição, remoção ou mudança de comportamento, atualize a documentação correspondente no mesmo ciclo de trabalho.
 - Nunca finalize uma entrega sem verificar se `README.md`, `docs/fluxo-desenvolvimento.md` e demais arquivos em `docs/` continuam corretos.
-- Se nao houver impacto de documentacao, registre explicitamente na resposta final: "Sem impacto de documentacao".
+- Se não houver impacto de documentação, registre explicitamente na resposta final: "Sem impacto de documentação".
 
-## Checklist de documentacao para agentes
+## Checklist de documentação para agentes
 
 Antes de concluir qualquer tarefa, o agente deve verificar:
 
-1. A mudanca alterou setup, comandos, ambiente ou scripts?
+1. A mudança alterou setup, comandos, ambiente ou scripts?
    - Atualizar `README.md`.
-2. A mudanca alterou fluxo de branches, PR, release ou hotfix?
+2. A mudança alterou fluxo de branches, PR, release ou hotfix?
    - Atualizar `docs/fluxo-desenvolvimento.md`.
-3. A mudanca alterou arquitetura, contratos, integracoes ou convencoes?
+3. A mudança alterou arquitetura, contratos, integrações ou convenções?
    - Atualizar o arquivo correspondente em `docs/`.
-4. A resposta final ao usuario deve listar quais arquivos de documentacao foram atualizados.
+4. A resposta final ao usuário deve listar quais arquivos de documentação foram atualizados.
 
-## Regra de consistencia
+## Regra de consistência
 
-- Codigo e documentacao devem evoluir juntos no mesmo conjunto de alteracoes.
-- Evite documentar depois: documente durante a implementacao.
+- Código e documentação devem evoluir juntos no mesmo conjunto de alterações.
+- Evite documentar depois: documente durante a implementação.
