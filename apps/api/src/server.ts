@@ -1,11 +1,16 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
+import cookie from "@fastify/cookie";
+import jwt from "@fastify/jwt";
 import rateLimit from "@fastify/rate-limit";
 import { onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fastify";
 import { router } from "./orpc/router.js";
+import { assertAuthConfig, authConfig } from "./auth/config.js";
 
 export function buildServer() {
+  assertAuthConfig();
+
   const app = Fastify({
     logger: true,
     handlerTimeout: Number(process.env.API_HANDLER_TIMEOUT_MS ?? 30000),
@@ -19,7 +24,32 @@ export function buildServer() {
   });
 
   app.register(cors, {
-    origin: true,
+    origin: authConfig.appBaseUrl,
+    credentials: true,
+  });
+
+  app.register(cookie);
+
+  app.register(jwt, {
+    secret: authConfig.accessSecret,
+    namespace: "access",
+    jwtVerify: "accessJwtVerify",
+    jwtSign: "accessJwtSign",
+    cookie: {
+      cookieName: authConfig.accessCookieName,
+      signed: false,
+    },
+  });
+
+  app.register(jwt, {
+    secret: authConfig.refreshSecret,
+    namespace: "refresh",
+    jwtVerify: "refreshJwtVerify",
+    jwtSign: "refreshJwtSign",
+    cookie: {
+      cookieName: authConfig.refreshCookieName,
+      signed: false,
+    },
   });
 
   app.register(rateLimit, {
@@ -52,7 +82,10 @@ export function buildServer() {
   }, async (request, reply) => {
     const { matched } = await rpcHandler.handle(request, reply, {
       prefix: "/rpc",
-      context: {},
+      context: {
+        request,
+        reply,
+      },
     });
 
     if (!matched) {
