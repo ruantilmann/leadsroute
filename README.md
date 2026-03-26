@@ -16,6 +16,7 @@ A proposta do projeto e centralizar a coleta de informacoes de empresas e dispon
 - **Backend**: Fastify
 - **Contratos e validacao**: oRPC + Zod
 - **Banco de dados**: PostgreSQL (Docker) + Prisma ORM
+- **Autenticacao**: JWT (access + refresh em cookie HttpOnly)
 - **Ambiente**: Node.js + pnpm
 
 ## Estrutura do repositorio
@@ -62,6 +63,16 @@ Preencha os valores necessarios no `.env`, principalmente:
 - `POSTGRES_PASSWORD`
 - `POSTGRES_DB`
 - `NEXT_PUBLIC_API_URL`
+- `APP_BASE_URL`
+- `AUTH_ACCESS_TOKEN_SECRET`
+- `AUTH_REFRESH_TOKEN_SECRET`
+- `AUTH_ACCESS_TOKEN_EXPIRES_IN`
+- `AUTH_REFRESH_TOKEN_EXPIRES_IN`
+- `AUTH_JWT_ISSUER`
+- `AUTH_JWT_AUDIENCE`
+- `AUTH_EMAIL_ENABLED`
+- `AUTH_EMAIL_FROM`
+- `RESEND_API_KEY`
 - `GOOGLE_MAPS_API_KEY`
 
 Variaveis opcionais de ajuste (timeout/retry/rate limit) tambem estao descritas no `.env.example`.
@@ -85,6 +96,21 @@ Endpoints padrao:
 - Web: `http://localhost:3000`
 - API: `http://localhost:3333`
 - RPC: `http://localhost:3333/rpc`
+
+## Fluxo de autenticacao
+
+- Cadastro: `http://localhost:3000/cadastro`
+- Login: `http://localhost:3000/login`
+- Esqueci senha: `http://localhost:3000/esqueci-senha`
+- Redefinir senha: `http://localhost:3000/redefinir-senha`
+- Confirmacao de email: `http://localhost:3000/verificar-email`
+
+Regras principais:
+
+- Sessao baseada em JWT com `access token` e `refresh token`.
+- Tokens armazenados em cookies HttpOnly.
+- Logout da sessao atual e logout global (todos os dispositivos).
+- Rotas de leads exigem usuario autenticado.
 
 ## Scripts uteis
 
