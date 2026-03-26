@@ -64,6 +64,7 @@ export async function searchPlacesByText(
 
   const baseUrl = process.env.GOOGLE_PLACES_BASE_URL ?? DEFAULT_BASE_URL;
   const timeoutMs = Number(process.env.GOOGLE_PLACES_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS);
+  const maxRetries = Number(process.env.GOOGLE_PLACES_MAX_RETRIES ?? 2);
 
   const body: Record<string, unknown> = {
     textQuery: `${input.termo} em ${input.cidade}`,
@@ -76,16 +77,21 @@ export async function searchPlacesByText(
     body.pageToken = input.pageToken;
   }
 
-  const response = await fetchWithTimeout(`${baseUrl}/places:searchText`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Goog-Api-Key": apiKey,
-      "X-Goog-FieldMask":
-        "places.id,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.addressComponents,nextPageToken",
+  const response = await fetchWithRetry(
+    `${baseUrl}/places:searchText`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask":
+          "places.id,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.addressComponents,nextPageToken",
+      },
+      body: JSON.stringify(body),
     },
-    body: JSON.stringify(body),
-  }, timeoutMs);
+    timeoutMs,
+    maxRetries
+  );
 
   if (!response.ok) {
     const responseText = await response.text();
@@ -182,4 +188,50 @@ async function fetchWithTimeout(
   } finally {
     clearTimeout(timeout);
   }
+}
+
+async function fetchWithRetry(
+  input: RequestInfo | URL,
+  init: RequestInit,
+  timeoutMs: number,
+  maxRetries: number
+): Promise<Response> {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
+    try {
+      const response = await fetchWithTimeout(input, init, timeoutMs);
+
+      if (isRetriableStatus(response.status) && attempt < maxRetries) {
+        await wait(backoffMs(attempt));
+        continue;
+      }
+
+      return response;
+    } catch (error) {
+      lastError = error;
+
+      if (attempt >= maxRetries) {
+        throw error;
+      }
+
+      await wait(backoffMs(attempt));
+    }
+  }
+
+  throw lastError instanceof Error
+    ? lastError
+    : new Error("Falha ao consultar Google Places após tentativas.");
+}
+
+function isRetriableStatus(status: number): boolean {
+  return status === 429 || status >= 500;
+}
+
+function backoffMs(attempt: number): number {
+  return 300 * 2 ** attempt;
+}
+
+async function wait(ms: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, ms));
 }
