@@ -1,10 +1,23 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { orpc } from "@/lib/orpc-client";
 
+type AuthUser = {
+  id: string;
+  email: string;
+  emailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export default function Home() {
+  const router = useRouter();
+
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [bootstrapping, setBootstrapping] = useState(true);
   const [termo, setTermo] = useState("");
   const [cidade, setCidade] = useState("");
   const [limite, setLimite] = useState("20");
@@ -30,7 +43,24 @@ export default function Home() {
   const [listLoading, setListLoading] = useState(false);
   const [hasPhoneFilter, setHasPhoneFilter] = useState<"all" | "yes" | "no">("all");
 
-  const loadLeads = async () => {
+  const bootstrapSession = useCallback(async () => {
+    try {
+      const data = await orpc.auth.me();
+      setUser(data.user);
+    } catch {
+      try {
+        await orpc.auth.refresh();
+        const data = await orpc.auth.me();
+        setUser(data.user);
+      } catch {
+        router.replace("/login");
+      }
+    } finally {
+      setBootstrapping(false);
+    }
+  }, [router]);
+
+  const loadLeads = useCallback(async () => {
     setListLoading(true);
 
     try {
@@ -46,7 +76,7 @@ export default function Home() {
     } finally {
       setListLoading(false);
     }
-  };
+  }, [hasPhoneFilter]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -61,6 +91,7 @@ export default function Home() {
         cidade,
         limite: Number.isFinite(parsedLimite) ? parsedLimite : 20,
       });
+
       setResult(data);
       await loadLeads();
     } catch {
@@ -70,17 +101,61 @@ export default function Home() {
     }
   };
 
+  const handleLogout = async () => {
+    await orpc.auth.logout();
+    router.replace("/login");
+  };
+
+  const handleLogoutAll = async () => {
+    await orpc.auth.logoutAll();
+    router.replace("/login");
+  };
+
   useEffect(() => {
-    void loadLeads();
-  }, [hasPhoneFilter]);
+    void bootstrapSession();
+  }, [bootstrapSession]);
+
+  useEffect(() => {
+    if (!bootstrapping && user) {
+      void loadLeads();
+    }
+  }, [bootstrapping, user, loadLeads]);
+
+  if (bootstrapping) {
+    return (
+      <main className="mx-auto flex min-h-screen w-full max-w-3xl items-center justify-center px-6 py-16">
+        <p className="text-sm text-muted-foreground">Verificando sessao...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 px-6 py-16">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">LeadsRoute Web</h1>
-        <p className="text-muted-foreground">
-          Importe leads por termo e cidade usando a integracao com Google Places.
-        </p>
+      <header className="space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-semibold tracking-tight">LeadsRoute Web</h1>
+            <p className="text-muted-foreground">Importe leads por termo e cidade usando a integracao com Google Places.</p>
+          </div>
+
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={() => void handleLogoutAll()}>
+              Sair de todos
+            </Button>
+            <Button type="button" onClick={() => void handleLogout()}>
+              Sair
+            </Button>
+          </div>
+        </div>
+
+        <div className="rounded-md border bg-card px-4 py-3 text-sm">
+          <p>
+            Usuario: <strong>{user?.email}</strong>
+          </p>
+          <p>
+            Email verificado: {user?.emailVerified ? "Sim" : "Nao"}
+          </p>
+        </div>
       </header>
 
       <form onSubmit={handleSubmit} className="grid gap-4 rounded-lg border bg-card p-6 shadow-sm">
@@ -148,9 +223,7 @@ export default function Home() {
               id="hasPhoneFilter"
               className="h-10 rounded-md border bg-background px-3 text-sm"
               value={hasPhoneFilter}
-              onChange={(event) =>
-                setHasPhoneFilter(event.target.value as "all" | "yes" | "no")
-              }
+              onChange={(event) => setHasPhoneFilter(event.target.value as "all" | "yes" | "no")}
             >
               <option value="all">Todos</option>
               <option value="yes">Somente com telefone</option>
@@ -189,9 +262,7 @@ export default function Home() {
                     {lead.telefone ? (
                       lead.telefone
                     ) : (
-                      <span className="rounded bg-amber-100 px-2 py-1 text-xs font-medium text-amber-800">
-                        Sem telefone
-                      </span>
+                      <span className="rounded bg-amber-100 px-2 py-1 text-xs font-medium text-amber-800">Sem telefone</span>
                     )}
                   </td>
                   <td className="px-3 py-2">{lead.enderecoCompleto}</td>
