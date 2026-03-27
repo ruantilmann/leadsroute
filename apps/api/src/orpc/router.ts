@@ -39,6 +39,7 @@ type AppContext = {
 };
 
 const os = implement<typeof contract, AppContext>(contract);
+const requestRateBuckets = new Map<string, { count: number; resetAt: number }>();
 
 const requireAuth = os.middleware(async ({ context, next }) => {
   const payload = await verifyAccessFromRequest(context.request);
@@ -251,20 +252,46 @@ const logoutAll = os.auth.logoutAll.handler(async ({ context }) => {
   return { ok: true };
 });
 
-const requestEmailVerification = os.auth.requestEmailVerification.handler(async ({ input }) => {
-  const email = normalizeEmail(input.email);
-  const user = await prisma.user.findUnique({
-    where: { email },
+const requestEmailVerification = os.auth.requestEmailVerification.handler(async ({ input, context }) => {
+  return withMinimumDuration(async () => {
+    const email = normalizeEmail(input.email);
+    assertRateLimit(`email-verify:ip:${context.request.ip}`, 5, 60 * 1000);
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (user && !user.emailVerifiedAt) {
+      assertRateLimit(`email-verify:user:${user.id}`, 3, 10 * 60 * 1000);
+
+      const recentToken = await prisma.emailVerificationToken.findFirst({
+        where: {
+          userId: user.id,
+          createdAt: {
+            gte: new Date(Date.now() - 60 * 1000),
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      if (recentToken) {
+        throw new ORPCError("TOO_MANY_REQUESTS", {
+          message: "Aguarde um minuto para solicitar um novo e-mail de verificacao.",
+        });
+      }
+
+      await generateAndSendEmailVerification(user.id, user.email);
+    }
+
+    return { ok: true };
   });
-
-  if (user && !user.emailVerifiedAt) {
-    await generateAndSendEmailVerification(user.id, user.email);
-  }
-
-  return { ok: true };
 });
 
-const verifyEmail = os.auth.verifyEmail.handler(async ({ input }) => {
+const verifyEmail = os.auth.verifyEmail.handler(async ({ input, context }) => {
+  assertRateLimit(`verify-email:ip:${context.request.ip}`, 20, 60 * 1000);
+
   const tokenHash = hashOpaqueToken(input.token);
 
   const token = await prisma.emailVerificationToken.findUnique({
@@ -296,33 +323,60 @@ const verifyEmail = os.auth.verifyEmail.handler(async ({ input }) => {
   return { ok: true };
 });
 
-const requestPasswordReset = os.auth.requestPasswordReset.handler(async ({ input }) => {
-  const email = normalizeEmail(input.email);
-  const user = await prisma.user.findUnique({
-    where: { email },
-  });
+const requestPasswordReset = os.auth.requestPasswordReset.handler(async ({ input, context }) => {
+  return withMinimumDuration(async () => {
+    const email = normalizeEmail(input.email);
+    assertRateLimit(`reset:ip:${context.request.ip}`, 5, 60 * 1000);
 
-  if (user) {
-    const resetToken = generateOpaqueToken();
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
 
-    await prisma.passwordResetToken.create({
-      data: {
+    if (user) {
+      assertRateLimit(`reset:user:${user.id}`, 3, 10 * 60 * 1000);
+
+      const recentToken = await prisma.passwordResetToken.findFirst({
+        where: {
+          userId: user.id,
+          createdAt: {
+            gte: new Date(Date.now() - 60 * 1000),
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      if (recentToken) {
+        throw new ORPCError("TOO_MANY_REQUESTS", {
+          message: "Aguarde um minuto para solicitar um novo reset de senha.",
+        });
+      }
+
+      const resetToken = generateOpaqueToken();
+
+      await prisma.passwordResetToken.create({
+        data: {
+          userId: user.id,
+          tokenHash: hashOpaqueToken(resetToken),
+          expiresAt: expiresAtFromDuration(authConfig.passwordResetTokenExpiresIn),
+        },
+      });
+
+      await sendPasswordReset({
+        to: user.email,
+        token: resetToken,
         userId: user.id,
-        tokenHash: hashOpaqueToken(resetToken),
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60),
-      },
-    });
+      });
+    }
 
-    await sendPasswordReset({
-      to: user.email,
-      token: resetToken,
-    });
-  }
-
-  return { ok: true };
+    return { ok: true };
+  });
 });
 
 const resetPassword = os.auth.resetPassword.handler(async ({ input, context }) => {
+  assertRateLimit(`reset-password:ip:${context.request.ip}`, 20, 60 * 1000);
+
   const tokenHash = hashOpaqueToken(input.token);
 
   const token = await prisma.passwordResetToken.findUnique({
@@ -670,20 +724,73 @@ async function revokeAllUserSessions(userId: string): Promise<void> {
 }
 
 async function generateAndSendEmailVerification(userId: string, email: string): Promise<void> {
+  await prisma.emailVerificationToken.updateMany({
+    where: {
+      userId,
+      usedAt: null,
+      expiresAt: {
+        gt: new Date(),
+      },
+    },
+    data: {
+      usedAt: new Date(),
+    },
+  });
+
   const verificationToken = generateOpaqueToken();
 
   await prisma.emailVerificationToken.create({
     data: {
       userId,
       tokenHash: hashOpaqueToken(verificationToken),
-      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      expiresAt: expiresAtFromDuration(authConfig.emailVerificationTokenExpiresIn),
     },
   });
 
   await sendEmailVerification({
     to: email,
     token: verificationToken,
+    userId,
   });
+}
+
+function assertRateLimit(key: string, max: number, windowMs: number): void {
+  const now = Date.now();
+  const current = requestRateBuckets.get(key);
+
+  if (!current || current.resetAt <= now) {
+    requestRateBuckets.set(key, {
+      count: 1,
+      resetAt: now + windowMs,
+    });
+    return;
+  }
+
+  if (current.count >= max) {
+    throw new ORPCError("TOO_MANY_REQUESTS", {
+      message: "Muitas tentativas. Tente novamente em instantes.",
+    });
+  }
+
+  current.count += 1;
+}
+
+async function withMinimumDuration<T>(fn: () => Promise<T>): Promise<T> {
+  const minMs = 500;
+  const startedAt = Date.now();
+
+  try {
+    return await fn();
+  } finally {
+    const elapsed = Date.now() - startedAt;
+    if (elapsed < minMs) {
+      await wait(minMs - elapsed);
+    }
+  }
+}
+
+async function wait(ms: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function isAccessPayload(payload: unknown): payload is AccessPayload {
