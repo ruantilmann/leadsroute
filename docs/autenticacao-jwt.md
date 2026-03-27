@@ -15,6 +15,7 @@ Este documento descreve a implementacao de autenticacao com JWT no LeadsRoute.
 - `RefreshTokenSession`: sessao por dispositivo para controle de refresh token.
 - `EmailVerificationToken`: token de confirmacao de email de uso unico.
 - `PasswordResetToken`: token de redefinicao de senha de uso unico.
+- `EmailDeliveryEvent`: auditoria de eventos recebidos via webhook do Resend.
 
 ## Fluxos suportados
 
@@ -25,6 +26,7 @@ Este documento descreve a implementacao de autenticacao com JWT no LeadsRoute.
 5. Logout global (revoga todas as sessoes).
 6. Solicitar confirmacao de email e confirmar por token.
 7. Solicitar redefinicao de senha e redefinir por token.
+8. Receber e validar webhooks do Resend para status de entrega.
 
 ## Cookies
 
@@ -49,7 +51,10 @@ Opcoes de seguranca:
 - `APP_BASE_URL`
 - `AUTH_EMAIL_ENABLED`
 - `AUTH_EMAIL_FROM`
+- `AUTH_EMAIL_VERIFICATION_EXPIRES_IN`
+- `AUTH_PASSWORD_RESET_EXPIRES_IN`
 - `RESEND_API_KEY`
+- `RESEND_WEBHOOK_SECRET`
 
 ## Observacoes de seguranca
 
@@ -57,3 +62,6 @@ Opcoes de seguranca:
 - Tokens de email e reset armazenados somente em hash (SHA-256) no banco.
 - Mensagens de recuperacao de senha evitam enumeracao de email.
 - Reuso/stale de refresh token revoga todas as sessoes do usuario.
+- Endpoints sensiveis de e-mail usam limitacao por IP e por usuario.
+- Solicitacoes de reset e verificacao aplicam tempo minimo de resposta para reduzir enumeracao.
+- Envio de e-mail usa idempotency key para evitar duplicidade em retries.

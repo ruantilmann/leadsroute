@@ -72,7 +72,10 @@ Preencha os valores necessarios no `.env`, principalmente:
 - `AUTH_JWT_AUDIENCE`
 - `AUTH_EMAIL_ENABLED`
 - `AUTH_EMAIL_FROM`
+- `AUTH_EMAIL_VERIFICATION_EXPIRES_IN`
+- `AUTH_PASSWORD_RESET_EXPIRES_IN`
 - `RESEND_API_KEY`
+- `RESEND_WEBHOOK_SECRET`
 - `GOOGLE_MAPS_API_KEY`
 
 Variaveis opcionais de ajuste (timeout/retry/rate limit) tambem estao descritas no `.env.example`.
@@ -96,6 +99,7 @@ Endpoints padrao:
 - Web: `http://localhost:3000`
 - API: `http://localhost:3333`
 - RPC: `http://localhost:3333/rpc`
+- Webhook Resend: `http://localhost:3333/webhooks/resend`
 
 ## Fluxo de autenticacao
 
@@ -111,6 +115,8 @@ Regras principais:
 - Tokens armazenados em cookies HttpOnly.
 - Logout da sessao atual e logout global (todos os dispositivos).
 - Rotas de leads exigem usuario autenticado.
+- Fluxos de e-mail usam Resend com idempotencia no envio.
+- Se o envio de e-mail falhar, a API retorna erro para o usuario.
 
 ## Scripts uteis
 
