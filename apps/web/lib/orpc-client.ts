@@ -7,6 +7,12 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3333";
 
 const link = new RPCLink({
   url: `${apiUrl}/rpc`,
+  fetch(request, init) {
+    return fetch(request, {
+      ...init,
+      credentials: "include",
+    });
+  },
 });
 
 export const orpc: ContractRouterClient<typeof contract> = createORPCClient(link);
