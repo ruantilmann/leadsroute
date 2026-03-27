@@ -90,3 +90,18 @@ model PasswordResetToken {
   @@index([userId])
   @@index([expiresAt])
 }
+
+model EmailDeliveryEvent {
+  id         String   @id @default(cuid())
+  provider   String   @db.VarChar(32)
+  messageId  String?  @db.VarChar(128)
+  eventType  String   @db.VarChar(64)
+  recipient  String?  @db.VarChar(255)
+  occurredAt DateTime
+  payload    String?  @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([eventType])
+  @@index([recipient])
+  @@index([occurredAt])
+}
